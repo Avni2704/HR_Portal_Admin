@@ -397,6 +397,7 @@ public class AdminDashboard extends DriverInstance {
 
     @Then("admin view notifications")
     public void admin_view_notifications() {
+        //Test
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
         WebElement notifModal = wait.until(ExpectedConditions.visibilityOfElementLocated(

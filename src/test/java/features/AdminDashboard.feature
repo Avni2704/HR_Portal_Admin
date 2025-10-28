@@ -1030,7 +1030,7 @@ Feature: Dashboard Feature
       | email              | password       | attachment                                                   |
       | "nami@mailsac.com" | "Password@123" | "C:\\Users\\naqiy\\Desktop\\ATF sample file\\sample15mb.pdf" |
 
-  #TC-A081
+  #TC-A081 @Test
   Scenario Outline: Verify that the sidebar works when changing the screen size
     Given admin on the login page
     And the email <email>
