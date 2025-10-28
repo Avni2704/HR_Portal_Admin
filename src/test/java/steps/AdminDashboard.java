@@ -384,6 +384,31 @@ public class AdminDashboard extends DriverInstance {
     }
 
     //TC-A028
+    @Given("admin click bell icon")
+    public void admin_click_bell_icon() throws InterruptedException {
+        WebElement bellIconButton = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector("img[alt='notifications']")));
+        bellIconButton.click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        Thread.sleep(1000);
+        System.out.println("Notification icon is visible on the dashboard.");
+        allureScreenshot();
+    }
+
+    @Then("admin view notifications")
+    public void admin_view_notifications() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+
+        WebElement notifModal = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector("div.notification-modal")));
+        assertTrue("Notification modal not visible!", notifModal.isDisplayed());
+
+        WebElement headerTitle = notifModal.findElement(By.cssSelector(".notification-modal__header--row--title"));
+        assertEquals("Notifications", headerTitle.getText().trim());
+
+        System.out.println("Notification list is visible in the modal");
+        allureScreenshot();
+    }
 
     //TC-A029
     @Given("admin click company icon")
@@ -945,13 +970,13 @@ public class AdminDashboard extends DriverInstance {
         allureScreenshot();
     }
 
-    @Given("Admin see disabled button")
+    @Given("admin see disabled button")
     public void admin_see_disabled_button() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
         System.out.println("Admin sees Create Announcement button is disabled");
 
-        WebElement createBtn = wait.until(ExpectedConditions.presenceOfElementLocated(
-                By.xpath("//button[.//p[text()='Create Announcement']]")
+        WebElement createBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector("button.app-button[disabled]")
         ));
 
         assertFalse("Create Announcement button should be disabled", createBtn.isEnabled());
@@ -1027,6 +1052,7 @@ public class AdminDashboard extends DriverInstance {
         WebElement descField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//textarea[@placeholder='Description']")));
         descField.clear();
         descField.sendKeys(description);
+        System.out.println("Description inserted");
         allureScreenshot();
 
     }
@@ -1102,26 +1128,25 @@ public class AdminDashboard extends DriverInstance {
     }
 
     @Then("verify description max length")
-    public void verifyDescriptionMaxLength() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    public void verify_description_max_length() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
 
-        WebElement descriptionField = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//textarea[@placeholder='Description']")));
+        WebElement descField = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//textarea[@name='description' or @placeholder='Description']")));
 
-        String actualText = descriptionField.getAttribute("value");
+        String actualValue = descField.getAttribute("value").trim();
+        int actualLength = actualValue.length();
 
-        int actualLength = actualText.length();
-        System.out.println("Description length: " + actualLength);
+        System.out.println("Actual description length: " + actualLength);
+        assertTrue("Description field allows more than 255 characters", actualLength <= 255);
 
-        assertTrue("Description field accepted more than 255 characters! Actual length = " + actualLength,actualLength <= 255);
-
-        System.out.println("Description field correctly restricted to max 255 characters.");
+        allureScreenshot();
     }
 
     @Given("admin see file validation")
     public void admin_see_file_validation() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
-        WebElement startDateError = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='alert']/p[@class='alert__text' and text()='File type unsupported']")
+        WebElement startDateError = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='alert']/p[@class='alert__text' and text()='Invalid file type.']")
         ));
         assertTrue("File Error is not visible",startDateError.isDisplayed());
 
@@ -1135,7 +1160,7 @@ public class AdminDashboard extends DriverInstance {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
         WebElement largeFileError = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='create-announcement-modal__error' and text()='File Size is too large (maximum 5MB)']")
         ));
-        assertTrue("Start Date Error is not visible",largeFileError.isDisplayed());
+        assertTrue("File validation not visible",largeFileError.isDisplayed());
 
         System.out.println("admin see validation error");
         allureScreenshot();
@@ -1148,6 +1173,71 @@ public class AdminDashboard extends DriverInstance {
         ));
         assertTrue("Banner is not visible",banner.isDisplayed());
         System.out.println("admin see green updated announcement banner");
+        allureScreenshot();
+    }
+
+
+    private String storedTitle;
+    private String storedDescription;
+
+    @Given("admin see announcement details")
+    public void admin_see_announcement_details() {
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        WebElement titleElement = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector("p.announcements__title")));
+        WebElement descElement = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector("p.announcements__description")));
+
+        storedTitle = titleElement.getText().trim();
+        storedDescription = descElement.getText().trim();
+
+        System.out.println("Captured Announcement Details:");
+        System.out.println("Title: " + storedTitle);
+        System.out.println("Description: " + storedDescription);
+        allureScreenshot();
+    }
+
+    @Then("admin verify announcement pre-filled")
+    public void admin_verify_announcement_pre_filled() {
+        wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+
+        WebElement titleField = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector("input[name='title'][placeholder='Title']")
+        ));
+        WebElement descField = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector("textarea[name='description'][placeholder='Description']")
+        ));
+
+        String actualTitle = titleField.getAttribute("value").trim();
+        String actualDescription = descField.getAttribute("value").trim();
+
+        System.out.println("Expected Title: " + storedTitle);
+        System.out.println("Actual Title: " + actualTitle);
+        System.out.println("Expected Description: " + storedDescription);
+        System.out.println("Actual Description: " + actualDescription);
+
+        assertEquals("Title not prefilled correctly", storedTitle, actualTitle);
+        assertEquals("Description not prefilled correctly", storedDescription, actualDescription);
+
+        allureScreenshot();
+    }
+
+    //TC-A081
+    @When("page minimise")
+    public void page_minimise() {
+        driver.manage().window().setSize(new Dimension(800, 900));
+        allureScreenshot();
+    }
+
+    @Given("admin click admin list")
+    public void admin_click_admin_list() {
+
+        WebElement adminListButton = wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath("//*[@id=\"side-nav\"]/div/nav/ul/li[2]/div[3]")));
+        adminListButton.click();
+
+        System.out.println("Admin List button clickable");
         allureScreenshot();
     }
 

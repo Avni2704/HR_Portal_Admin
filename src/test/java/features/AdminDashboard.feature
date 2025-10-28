@@ -175,6 +175,19 @@ Feature: Dashboard Feature
       | "nami@mailsac.com" | "Password@123" |
 
   #TC-A028
+  Scenario Outline: Verify Admin can click the 'Bell' Icon to view notifications.
+    Given admin on the login page
+    And the email <email>
+    And the password <password>
+    When admin clicked login
+    Then admin select company modal
+    And admin see the dashboard
+    And admin click bell icon
+    Then admin view notifications
+
+    Examples:
+      | email              | password       |
+      | "nami@mailsac.com" | "Password@123" |
 
   #TC-A029
   Scenario Outline: Verify Admin can click the "Durian" Icon to close the sidebar
@@ -454,7 +467,7 @@ Feature: Dashboard Feature
     And admin select company modal
     Then admin see the dashboard
     And admin see remaining
-    Then Admin see disabled button
+    Then admin see disabled button
 
     Examples:
       | email              | password       |
@@ -751,8 +764,8 @@ Feature: Dashboard Feature
     Then admin see file validation
 
     Examples:
-      | email              | password       | expectedTitle       | pickStartDate | pickEndDate  | description                                    | attachment                                    |
-      | "nami@mailsac.com" | "Password@123" | "Test Announcement" | "1"           | "15"         | "It is a testing announcement by Tester"       | "C:\\Users\\naqiy\\Desktop\\exampleDOCX.docx" |
+      | email                     | password       | expectedTitle       | pickStartDate | pickEndDate  | description                                    | attachment                                                     |
+      | "awtestingbot@outlook.com" | "Perfume@123" | "Test Announcement" | "1"           | "15"         | "It is a testing announcement by Tester"       | "C:\\Users\\naqiy\\Desktop\\ATF sample file\\exampleDOCX.docx" |
 
   #TC-A065
   Scenario Outline: Upload a file larger than 5MB – should show error message.
@@ -776,6 +789,21 @@ Feature: Dashboard Feature
       | "nami@mailsac.com" | "Password@123" | "Test Announcement" | "1"           | "15"         | "It is a testing announcement by Tester"       | "C:\\Users\\naqiy\\Desktop\\sample15mb.pdf" |
 
   #TC-A066
+  Scenario Outline: Verify that an existing announcement loads with all fields pre-filled correctly.
+    Given admin on the login page
+    And the email <email>
+    And the password <password>
+    When admin clicked login
+    And admin select company modal
+    Then admin see the dashboard
+    And admin see announcement details
+    And admin click edit icon
+    Then admin verify announcement pre-filled
+
+
+    Examples:
+      | email              | password       |
+      | "nami@mailsac.com" | "Password@123" |
 
   #TC-A067
   Scenario Outline: Verify that only the Title can be edited and saved successfully.
@@ -895,8 +923,8 @@ Feature: Dashboard Feature
     And admin click cancel button
 
     Examples:
-      | email              | password       | expectedTitle              | pickStartDate | pickEndDate  | description                              | attachment                                  |
-      | "nami@mailsac.com" | "Password@123" | "Test Announcement Edited" | "5"           | "20"         | "This is for test editing purpose"       | "C:\\Users\\naqiy\\Desktop\\sample15mb.pdf" |
+      | email              | password       | expectedTitle              | pickStartDate | pickEndDate  | description                              | attachment                                                   |
+      | "nami@mailsac.com" | "Password@123" | "Test Announcement Edited" | "5"           | "20"         | "This is for test editing purpose"       | "C:\\Users\\naqiy\\Desktop\\ATF sample file\\sample15mb.pdf" |
 
   #TC-A075
   Scenario Outline: Verify that deleting the Title and saving triggers a validation error.
@@ -912,8 +940,8 @@ Feature: Dashboard Feature
     Then admin see validation message
 
     Examples:
-      | email              | password       | expectedTitle              |
-      | "nami@mailsac.com" | "Password@123" | "Test Announcement Edited" |
+      | email              | password       | expectedTitle |
+      | "nami@mailsac.com" | "Password@123" | ""            |
 
  #TC-A076
   Scenario Outline: Verify that deleting the Description triggers a validation error.
@@ -929,8 +957,8 @@ Feature: Dashboard Feature
     Then admin see validation message
 
     Examples:
-      | email              | password       | description                                            |
-      | "nami@mailsac.com" | "Password@123" | "This is the test for editing the description"         |
+      | email              | password       | description |
+      | "nami@mailsac.com" | "Password@123" | ""          |
 
   #TC-A077
   Scenario Outline: Verify that setting the End Date earlier than the Start Date shows a validation error.
@@ -962,8 +990,59 @@ Feature: Dashboard Feature
     And admin insert description <description>
     Then verify description max length
     And admin click create button
-    Then admin see announcement banner
+    Then admin see updated announcement banner
 
     Examples:
       | email              | password       |  description                                                                                                                                                                                                                                                                   |
       | "nami@mailsac.com" | "Password@123" | "(Test Edit) Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis,"  |
+
+  #TC-A079
+  Scenario Outline: Verify that uploading unsupported file formats (e.g. .exe, .docx) is rejected.
+    Given admin on the login page
+    And the email <email>
+    And the password <password>
+    When admin clicked login
+    And admin select company modal
+    Then admin see the dashboard
+    And admin click edit icon
+    And admin upload attachment <attachment>
+    And admin click create button
+    Then admin see file validation
+
+    Examples:
+      | email                      | password      | attachment                                                     |
+      | "awtestingbot@outlook.com" | "Perfume@123" | "C:\\Users\\naqiy\\Desktop\\ATF sample file\\exampleDOCX.docx" |
+
+  #TC-A080
+  Scenario Outline: Verify that uploading a file larger than 5MB triggers an error.
+    Given admin on the login page
+    And the email <email>
+    And the password <password>
+    When admin clicked login
+    And admin select company modal
+    Then admin see the dashboard
+    And admin click edit icon
+    And admin upload attachment <attachment>
+    And admin click create button
+    Then admin see large file validation
+
+    Examples:
+      | email              | password       | attachment                                                   |
+      | "nami@mailsac.com" | "Password@123" | "C:\\Users\\naqiy\\Desktop\\ATF sample file\\sample15mb.pdf" |
+
+  #TC-A081
+  Scenario Outline: Verify that the sidebar works when changing the screen size
+    Given admin on the login page
+    And the email <email>
+    And the password <password>
+    When admin clicked login
+    And admin select company modal
+    Then admin see the dashboard
+    When page minimise
+    And admin click user management
+    Then admin click admin list
+
+
+    Examples:
+      | email                      | password      |
+      | "awtestingbot@outlook.com" | "Perfume@123" |
