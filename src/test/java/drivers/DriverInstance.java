@@ -26,7 +26,7 @@ public class DriverInstance extends Variables {
         Allure.addAttachment("Step Screenshot", "image/png", new ByteArrayInputStream(screenshot1), "png");
     }
 
-    public void scrollDown() {
+    public static void scrollDown() {
         JavascriptExecutor js = (JavascriptExecutor) driver;
 
         js.executeScript("window.scrollBy(0, 500);");

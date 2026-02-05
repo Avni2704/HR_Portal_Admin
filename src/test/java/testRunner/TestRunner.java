@@ -5,12 +5,13 @@ import io.cucumber.testng.CucumberOptions;
 
 @CucumberOptions(
         //features = {"src/test/java/features/AdminChangePassword.feature"},
-        features = {"src/test/java/features/AdminLogin.feature"},
+        //features = {"src/test/java/features/AdminLogin.feature"},
+        features = {"src/test/java/features/AdminLeaveManagement.feature"},
         //dryRun = true,
         glue = { "steps", "hooks" },
         snippets = CucumberOptions.SnippetType.CAMELCASE,
         monochrome = true, // TO REMOVE JUNK CHARACTERS
-        //tags = "@TC002",
+        tags = "@Approve",
         plugin = { "io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm" })
 
 public class TestRunner extends AbstractTestNGCucumberTests {
