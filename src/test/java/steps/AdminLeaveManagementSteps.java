@@ -35,7 +35,7 @@ import static qa.util.ExternalFunction.getUITableData;
 import static qa.util.ExternalFunction.getVisibleTableHeaders;
 
 public class AdminLeaveManagementSteps extends DriverInstance {
-    WebDriver driver = Hooks.driver; // Assuming you have a Hooks class initializing WebDriver
+    WebDriver driver = Hooks.driver;
     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(40));
 
     private WebElement selectedRow;
@@ -744,7 +744,7 @@ public class AdminLeaveManagementSteps extends DriverInstance {
     public void inputRejectReason() {
         WebElement textarea = driver.findElement(By.name("rejectReason"));
         textarea.clear();
-        textarea.sendKeys("Automation Test: Not eligible for leave");
+        textarea.sendKeys("Automation Test: Not eligible for application");
         System.out.println("PASS: Reject reason entered");
     }
 
@@ -760,7 +760,7 @@ public class AdminLeaveManagementSteps extends DriverInstance {
     public void verifyRejectDraft() {
         WebElement textarea = driver.findElement(By.name("rejectReason"));
         String draft = textarea.getAttribute("value");
-        Assert.assertEquals(draft, "Automation Test: Not eligible for leave", "Reject reason draft not saved");
+        Assert.assertEquals(draft, "Automation Test: Not eligible for application", "Reject reason draft not saved");
         System.out.println("PASS: Reject reason saved as draft");
     }
 

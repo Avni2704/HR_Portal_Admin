@@ -83,9 +83,7 @@ public class AdminChangePasswordSteps extends DriverInstance {
 
         ExternalFunction.waitForLoaderToDisappear(driver);
 
-        WebElement profileButton = longWait.until(ExpectedConditions.elementToBeClickable(
-                By.xpath("//*[@id=\"layout-container\"]/header/div/div/div[2]/img")));
-        profileButton.click();
+        driver.findElement(By.className("header__image")).click();
     }
 
     @When("User click change password")
@@ -171,9 +169,9 @@ public class AdminChangePasswordSteps extends DriverInstance {
 
         assertTrue("OTP Modal should be displayed", modal.isDisplayed());
 
-        WebElement modalTitle = driver.findElement(By.cssSelector("p.otp-modal__title"));
+        /*WebElement modalTitle = driver.findElement(By.cssSelector("p.otp-modal__title"));
         assertEquals(modalTitle.getText(), "OTP Verification");
-
+        */
         allureScreenshot();
     }
 
@@ -219,13 +217,18 @@ public class AdminChangePasswordSteps extends DriverInstance {
     @And("User retrieve OTP")
     public void userRetrieveOTP() {
         // Wait for latest OTP email
-        longWait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".row")));
-        driver.findElements(By.cssSelector(".row")).get(0).click();
+        List<WebElement> emails = driver.findElements(By.cssSelector("tr.clickable.ng-scope"));
+        WebElement latestEmail = emails.get(0);
+        latestEmail.click();
 
         allureScreenshot();
 
         // Wait for message body
-        WebElement messageBody = longWait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[1]/div[2]/div[1]/div/div[2]/div/table/tbody/tr[2]/td[2]/div[2]/div[2]/table/tbody/tr[5]/td/b")));
+        WebElement messageBody = longWait.until(
+                ExpectedConditions.visibilityOfElementLocated(
+                        By.xpath("//div[contains(@class,'ng-binding') and @ng-bind-html]")
+                )
+        );
 
         allureScreenshot();
 

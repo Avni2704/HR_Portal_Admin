@@ -14,6 +14,7 @@ import org.testng.Assert;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
@@ -300,22 +301,52 @@ public class ExternalFunction extends DriverInstance {
 
     // Export file validation
     public static List<List<String>> getUITableData() {
-        List<List<String>> tableData = new ArrayList<>();
+        List<List<String>> allData = new ArrayList<>();
 
-        List<WebElement> rows = driver.findElements(
-                By.cssSelector("table tbody tr")
-        );
+        // Wait first page rows
+        waitForTableToLoad(driver, ".app-table", 15);
 
-        for (WebElement row : rows) {
-            List<String> rowData = new ArrayList<>();
-            List<WebElement> cells = row.findElements(By.cssSelector("td"));
+        while (true) {
 
-            for (WebElement cell : cells) {
-                rowData.add(cell.getText().trim());
+            WebElement oldTable = driver.findElement(By.cssSelector("tbody.table__tbody"));
+
+            List<WebElement> rows = driver.findElements(
+                    By.cssSelector("tbody.table__tbody tr.table__tr")
+            );
+
+            if (rows.isEmpty()) {
+                System.out.println("No rows found on this page.");
+                break;
             }
-            tableData.add(rowData);
+
+            List<List<String>> pageData = rows.stream()
+                    .map(row -> row.findElements(
+                                    By.cssSelector("td.table__td:not(.table__td--action)")
+                            ).stream()
+                            .map(WebElement::getText)
+                            .map(String::trim)
+                            .collect(Collectors.toList()))
+                    .collect(Collectors.toList());
+
+            allData.addAll(pageData);
+
+            List<WebElement> nextButtons = driver.findElements(
+                    By.cssSelector("button.app-table__arrow--next[aria-label='next']")
+            );
+
+            if (nextButtons.isEmpty()
+                    || !nextButtons.get(0).isEnabled()
+                    || "true".equals(nextButtons.get(0).getAttribute("aria-disabled"))) {
+                break;
+            }
+
+            nextButtons.get(0).click();
+
+            waitForTableToLoad(driver, ".app-table", 15);
+            //wait.until(ExpectedConditions.stalenessOf(oldTable));
         }
-        return tableData;
+
+        return allData;
     }
 
     public static List<String> getVisibleTableHeaders() {
@@ -353,7 +384,7 @@ public class ExternalFunction extends DriverInstance {
     }
 
     public static File waitForExportedFile() throws InterruptedException {
-        File dir = new File(System.getProperty("user.home") + "/Downloads");
+        File dir = Paths.get(System.getProperty("user.home"), "Downloads").toFile();
         File latestFile = null;
 
         for (int i = 0; i < 10; i++) {

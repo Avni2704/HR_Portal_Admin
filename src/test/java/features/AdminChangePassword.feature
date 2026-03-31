@@ -245,7 +245,7 @@ Feature: Change Password for Admin
 
     Examples:
       | email                  | password     | currentPassword | newPassword  | confirmNewPassword | emailUsername | emailPassword     |
-      | "testnini@mailsac.com" | "Tester@123" | "Tester@1"      | "Tester@456" | "Tester@456"       | "nini"        | "uzBcAvf292#z8Wc" |
+      | "nurliyane@mailsac.com" | "Tester@123" | "Tester@1"      | "Tester@456" | "Tester@456"       | "nini"        | "uzBcAvf292#z8Wc" |
 
       #IHP-61-016
   @IHP-61-016
